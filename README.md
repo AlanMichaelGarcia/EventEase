@@ -1,1 +1,2 @@
 "# EventEase" 
+"# EventEaseApp" 
