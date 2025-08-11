@@ -1,0 +1,65 @@
+@using Microsoft.AspNetCore.Components
+@using System.ComponentModel.DataAnnotations
+
+
+<EditForm Model="this" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="event-card">
+        <h3>@EventTitle</h3>
+        <p>@EventDescription</p>
+        <p><strong>Date:</strong> @EventDate.ToShortDateString()</p>
+        <InputText @bind-Value="EventTitle" placeholder="Edit Title" />
+        <ValidationMessage For="@(() => EventTitle)" />
+        <br />
+        <InputTextArea @bind-Value="EventDescription" placeholder="Edit Description" />
+        <ValidationMessage For="@(() => EventDescription)" />
+        <br />
+        <InputDate @bind-Value="EventDate" />
+        <ValidationMessage For="@(() => EventDate)" />
+        <br />
+        <button type="submit">Save</button>
+        <button type="button" @onclick="MarkAttendance">Attend</button>
+        @if (!string.IsNullOrEmpty(attendanceMessage))
+        {
+            <div class="alert alert-info">@attendanceMessage</div>
+        }
+    </div>
+</EditForm>
+
+@code {
+    [Inject]
+    private EventEase.Services.UserSessionService UserSession { get; set; } = default!;
+
+    [Parameter]
+    [Required(ErrorMessage = "Title is required")]
+    public string EventTitle { get; set; } = string.Empty;
+
+    [Parameter]
+    [Required(ErrorMessage = "Description is required")]
+    public string EventDescription { get; set; } = string.Empty;
+
+    [Parameter]
+    [Required(ErrorMessage = "Date is required")]
+    public DateTime EventDate { get; set; } = DateTime.Today;
+
+    private string? attendanceMessage;
+
+    private void HandleValidSubmit()
+    {
+        // Save logic or callback can be added here
+    }
+
+    private void MarkAttendance()
+    {
+        if (UserSession.IsRegistered)
+        {
+            UserSession.AttendEvent(EventTitle);
+            attendanceMessage = $"You are attending '{EventTitle}'.";
+        }
+        else
+        {
+            attendanceMessage = "Please register before marking attendance.";
+        }
+    }
+}

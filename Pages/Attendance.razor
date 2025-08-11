@@ -1,0 +1,28 @@
+@page "/attendance"
+@inject EventEase.Services.UserSessionService UserSession
+
+<h2>Attendance Tracker</h2>
+
+@if (!UserSession.IsRegistered)
+{
+    <p>Please register first to track your attendance.</p>
+}
+else
+{
+    <h4>Welcome, @UserSession.UserName!</h4>
+    <p>Your registered email: @UserSession.Email</p>
+    <h5>Events You're Attending:</h5>
+    @if (UserSession.AttendingEvents.Count == 0)
+    {
+        <p>You are not attending any events yet.</p>
+    }
+    else
+    {
+        <ul>
+            @foreach (var evt in UserSession.AttendingEvents)
+            {
+                <li>@evt</li>
+            }
+        </ul>
+    }
+}

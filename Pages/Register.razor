@@ -1,0 +1,46 @@
+
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Components.Forms
+@inject EventEase.Services.UserSessionService UserSession
+
+<EditForm Model="registrationModel" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div>
+        <label>Name:</label>
+        <InputText @bind-Value="registrationModel.Name" />
+        <ValidationMessage For="@(() => registrationModel.Name)" />
+    </div>
+    <div>
+        <label>Email:</label>
+        <InputText @bind-Value="registrationModel.Email" />
+        <ValidationMessage For="@(() => registrationModel.Email)" />
+    </div>
+    <button type="submit">Register</button>
+</EditForm>
+
+@if (isRegistered)
+{
+    <p>Thank you for registering, @registrationModel.Name!</p>
+}
+
+@code {
+    private RegistrationModel registrationModel = new();
+    private bool isRegistered = false;
+
+    private void HandleValidSubmit()
+    {
+        isRegistered = true;
+        UserSession.Register(registrationModel.Name, registrationModel.Email);
+    }
+
+    public class RegistrationModel
+    {
+        [Required]
+        public string Name { get; set; } = string.Empty;
+
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; } = string.Empty;
+    }
+}
